@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -21,7 +23,7 @@ public class FilesServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws IOException, ServletException {
-        String userName = "";
+        String userName;
         try {
             UserProfile userProfile = accountService.getUserBySessionId(req.getSession().getId());
             userName = userProfile.getLogin();
@@ -38,9 +40,16 @@ public class FilesServlet extends HttpServlet {
             path = params.get("path")[0].replace('/', '\\');
         } catch (Exception ignored) { }
 
+        try {
+            Path a = Paths.get(path);
+            if (a.isAbsolute()) {
+                path = homeFolder;
+            }
+        } catch (Exception e) {
+            path = homeFolder;
+        }
+
         if (!path.startsWith(homeFolder)) {
-            System.out.println("hf: " + homeFolder);
-            System.out.println("path: " + path);
             path = homeFolder;
         }
 
@@ -60,7 +69,7 @@ public class FilesServlet extends HttpServlet {
 
     @Override
     public void doPost(HttpServletRequest request,
-                       HttpServletResponse response) throws ServletException, IOException {
+                       HttpServletResponse response) throws IOException {
         try {
             accountService.deleteSession(request.getSession().getId());
         } catch (RuntimeException ignored) { }

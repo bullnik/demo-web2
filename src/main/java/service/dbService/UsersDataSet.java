@@ -1,10 +1,43 @@
 package service.dbService;
 
 import model.UserProfile;
+import javax.persistence.*;
 
-public class UsersDataSet extends UserProfile {
+@Entity
+@Table(name="users")
+public class UsersDataSet {
 
-    public UsersDataSet(String login, String password, String email) {
-        super(login, password, email);
+    @Id
+    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "login", unique = true)
+    private String login;
+    @Column(name = "password")
+    private String password;
+    @Column(name = "email")
+    private String email;
+
+    public UsersDataSet() {
+
+    }
+
+    public UsersDataSet(UserProfile userProfile) {
+        this.login = userProfile.getLogin();
+        this.password = userProfile.getPass();
+        this.email = userProfile.getEmail();
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }

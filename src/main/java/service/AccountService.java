@@ -16,7 +16,7 @@ public class AccountService {
 
     }
 
-    public void registerNewUser(UserProfile userProfile) throws DBException {
+    public void registerNewUser(UserProfile userProfile) {
         if (userProfile.getLogin().equals("")
                 || userProfile.getEmail().equals("")
                 || userProfile.getPass().equals("")) {
@@ -27,20 +27,18 @@ public class AccountService {
             throw new RuntimeException("User with same login already registered");
         }
 
-        dbService.addUser(new UsersDataSet(userProfile.getLogin(),
-                userProfile.getPass(),
-                userProfile.getEmail()));
+        dbService.addUser(userProfile);
     }
 
-    public UserProfile getUserByLoginAndPassword(String login, String password) throws DBException {
+    public UserProfile getUserByLoginAndPassword(String login, String password) {
         if (!dbService.checkUserExists(login)) {
             throw new RuntimeException("User profile not found");
         }
-        UsersDataSet usersDataSet = dbService.getUser(login);
-        if (!password.equals(usersDataSet.getPass())) {
+        UserProfile userProfile = dbService.getUser(login);
+        if (!password.equals(userProfile.getPass())) {
             throw new RuntimeException("Password not correct");
         }
-        return (UserProfile) usersDataSet;
+        return userProfile;
     }
 
     public UserProfile getUserBySessionId(String sessionId) {
